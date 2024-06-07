@@ -1,0 +1,60 @@
+version: "3.9"
+
+
+services:
+
+  postgres:
+    image: postgres:16.1-alpine3.19
+    restart: always
+    env_file:
+      - ./.env
+    ports:
+      - "35433:5432"
+    volumes:
+      - ./scripts:/docker-entrypoint-initdb.d
+      - ./mount/db:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  # superset:
+  #   image: apache/superset:latest
+  #   environment:
+  #     SUPERSET_ENV: development
+  #     SUPERSET_LOAD_EXAMPLES: "yes"
+  #     SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY}
+  #     SUPERSET_DATABASE_URL: postgresql+psycopg2://postgres:postgres@postgres:5432/postgres
+  #   ports:
+  #     - "38088:8088"
+  #   depends_on:
+  #     - postgres
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "curl -f http://localhost:8088/health || exit 1"]
+  #     interval: 10s
+  #     retries: 5
+  #   command: >
+  #     /bin/bash -c "
+  #     superset db upgrade &&
+  #     superset fab create-admin --username ${SUPERSET_ADMIN_USERNAME} --password ${SUPERSET_ADMIN_PASSWORD} --firstname Admin --lastname User --email admin@superset.com &&
+  #     superset init &&
+  #     superset run -h 0.0.0.0 -p 8088
+  #     "
+
+  pgadmin:
+    image: dpage/pgadmin4
+    volumes:
+      - ./servers.json:/pgadmin4/servers.json
+    ports:
+      - "15050:80"
+    depends_on:
+      - postgres
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: password
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    networks:
+      - backend
+
+
+networks:
+  backend:
+    driver: bridge
