@@ -5,9 +5,11 @@ from fastapi.routing import APIRoute
 
 from app.api.main import api_router
 from app.core.config import settings
-from app.core.db import Base, engine
+from app.core.db import create_tables
 
-Base.metadata.create_all(bind=engine)
+create_tables()
+# Base.metadata.create_all(bind=engine)
+
 
 def custom_generate_unique_id(route: APIRoute) -> str:
     return f"{route.tags[0]}-{route.name}"

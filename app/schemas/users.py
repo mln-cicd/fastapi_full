@@ -18,8 +18,9 @@ class UserRead(BaseModel):
     created_at: datetime
 
     class Config:
-        orm_mode = True
-        
+        from_attrubutes = True
+
+
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
