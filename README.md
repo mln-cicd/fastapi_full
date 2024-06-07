@@ -29,3 +29,4 @@ class Base(orm.DeclarativeBase):
 
 
 git remote set-url origin git@github.com-mln-cicd/fastapi_full.git
+git remote set-url origin git@github.com-mln-cicd:mln-cicd/fastapi_full.gi
