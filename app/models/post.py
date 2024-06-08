@@ -1,9 +1,10 @@
 from datetime import datetime
-from sqlalchemy import DateTime
+from sqlalchemy import DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql.expression import text
 
-from app.core.db import Base
+from app.core.declarative import Base
+from sqlalchemy.orm import relationship
 
 
 class Post(Base):
@@ -19,3 +20,7 @@ class Post(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=text("now()")
     )
+    owner_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
+    owner = relationship("User")

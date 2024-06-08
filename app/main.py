@@ -4,8 +4,9 @@ from fastapi.routing import APIRoute
 # import sentry_sdk
 
 from app.api.main import api_router
-from app.core.config import settings
 from app.core.db import create_tables
+from app.core.config import settings
+
 
 create_tables()
 # Base.metadata.create_all(bind=engine)

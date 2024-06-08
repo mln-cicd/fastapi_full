@@ -5,6 +5,7 @@ from app.core.security import verify_access_token
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 import app.models.user as models
+from app.core.config import settings
 
 
 def get_db() -> Generator:
@@ -19,7 +20,8 @@ def get_db() -> Generator:
 #     with Session(engine) as session:
 #         yield session
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/login")
 
 
 def get_current_user(
@@ -30,8 +32,10 @@ def get_current_user(
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    token = verify_access_token(
+    token_data = verify_access_token(
         token=token, credentials_exception=credentials_exception
     )
-    user = db.query(models.User).filter(models.User.id == token.id).first()
+    user = db.query(models.User).filter(models.User.id == int(token_data.id)).first()
+    if user is None:
+        raise credentials_exception
     return user

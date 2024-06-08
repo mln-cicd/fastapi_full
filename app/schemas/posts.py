@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
+from app.schemas.users import UserRead
 
 
 class PostBase(BaseModel):
@@ -18,6 +19,8 @@ class PostUpdate(PostBase):
 
 class PostRead(BaseModel):
     id: int
+    owner_id: int
+    owner: UserRead
     title: str
     content: str
     published: bool = True

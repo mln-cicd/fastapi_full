@@ -32,7 +32,18 @@ class Settings(BaseSettings):
         "postgresql+psycopg2://postgres:postgres@127.0.0.1:35433/fastapi"
     )
 
-    # More configurations can be added here in the future
+    # @property
+    # def SQLALCHEMY_DATABASE_URI(self) -> str:
+    #     if self.ENVIRONMENT == "local":
+    #         return f"postgresql+psycopg2://{self.postgres_user}:{self.postgres_password}@{self.postgres_host}/{self.postgres_db}"
+    #     elif self.ENVIRONMENT == "staging":
+    #         return f"postgresql+psycopg2://{self.postgres_user}:{self.postgres_password}@staging-db-host/{self.postgres_db}"
+    #     elif self.ENVIRONMENT == "production":
+    #         return f"postgresql+psycopg2://{self.postgres_user}:{self.postgres_password}@production-db-host/{self.postgres_db}"
+    #     else:
+    #         raise ValueError(f"Unknown environment: {self.ENVIRONMENT}")
+
+    # # More configurations can be added here in the future
 
     def as_dict(self) -> Dict[str, Any]:
         return self.dict()
