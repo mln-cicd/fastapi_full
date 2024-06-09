@@ -1,6 +1,7 @@
 import secrets
 from typing import Any, Dict, List, Literal, Optional, Union
 
+from pydantic import EmailStr
 from pydantic_settings import BaseSettings  # , AnyUrl
 
 
@@ -21,23 +22,24 @@ class Settings(BaseSettings):
     # 60 minutes * 24 hours * 8 days = 8 days
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60  # * 24 * 8
     DOMAIN: str = "localhost"
-    ENVIRONMENT: Literal["local", "staging", "production"] = "local"
+    ENVIRONMENT: Literal["local", "test", "staging", "production"] = "local"
     PROJECT_NAME: str = "FastAPI FULL"
-    SQLALCHEMY_DATABASE_URI: str = (
-        "postgresql+psycopg2://postgres:postgres@127.0.0.1:35433/fastapi"
-    )
 
-    # @property
-    # def SQLALCHEMY_DATABASE_URI(self) -> str:
-    #     if self.ENVIRONMENT == "local":
-    #         return f"postgresql+psycopg2://{self.postgres_user}:{self.postgres_password}@{self.postgres_host}/{self.postgres_db}"
-    #     elif self.ENVIRONMENT == "staging":
-    #         return f"postgresql+psycopg2://{self.postgres_user}:{self.postgres_password}@staging-db-host/{self.postgres_db}"
-    #     elif self.ENVIRONMENT == "production":
-    #         return f"postgresql+psycopg2://{self.postgres_user}:{self.postgres_password}@production-db-host/{self.postgres_db}"
-    #     else:
-    #         raise ValueError(f"Unknown environment: {self.ENVIRONMENT}")
+    @property
+    def SQLALCHEMY_DATABASE_URI(self) -> str:
+        if self.ENVIRONMENT == "local":
+            return f"postgresql+psycopg2://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}/{self.POSTGRES_DB}"
+        elif self.ENVIRONMENT == "test":
+            return f"postgresql+psycopg2://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@localhost/{self.POSTGRES_DB}_test"
+        elif self.ENVIRONMENT == "production":
+            return f"postgresql+psycopg2://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@production-db-host/{self.POSTGRES_DB}"
+        else:
+            raise ValueError(f"Unknown environment: {self.ENVIRONMENT}")
 
+    TEST_EMAIL: Optional[EmailStr] = "test_user@example.com"
+    TEST_PASSWORD: Optional[str] = "testpassword123"
+    FIRST_SUPERUSER: Optional[str] = ""
+    FIRST_SUPERUSER_PASSWORD: Optional[str] = ""
     # # More configurations can be added here in the future
 
     def as_dict(self) -> Dict[str, Any]:

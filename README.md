@@ -65,6 +65,32 @@ sudo apt install nginx -y
 ```
 
 Get pytest to hide warnings and stop as soon as there's a failed test (`-x`):
-```py
+```bash
 pytest -s -v --disable-warnings
+```
+
+```py
+app.dependency_overrides[get_db] = override_get_db
+```
+
+
+Fixture to yield only the db
+```py
+@pytest.fixture
+def session():
+	command.downgrade("base") #downgrade at first to keep the current db state if a test fails
+	command.upgrade("head")
+	yield TestClient(app)
+```
+
+
+Use alembic migrations as fixtures instead of Base.metadata  
+```py
+from alembic import command
+
+@pytest.fixture
+def client(session):
+	command.downgrade("base") #downgrade at first to keep the current db state if a test fails
+	command.upgrade("head")
+	yield TestClient(app)
 ```
