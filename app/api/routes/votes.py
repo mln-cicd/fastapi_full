@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Depends, status, HTTPException
-from sqlalchemy.orm import Session
-from app.schemas.votes import VoteCreate
-from app.models.vote import Vote
-from app.models.post import Post
-
-from app.api.deps import get_db, get_current_user
+from fastapi import APIRouter, Depends, HTTPException, status
 from loguru import logger
+from sqlalchemy.orm import Session
+
+from app.api.deps import get_current_user, get_db
+from app.models.post import Post
+from app.models.vote import Vote
+from app.schemas.votes import VoteCreate
 
 router = APIRouter()
 
@@ -17,6 +17,7 @@ def create_vote(
     db: Session = Depends(get_db),
 ):
     post = db.query(Post).filter(Post.id == vote.post_id).first()
+    logger.info(f"Post: {post}, current user: {current_user.id}")
     if not post:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

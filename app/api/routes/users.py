@@ -1,13 +1,13 @@
-from fastapi import APIRouter, Depends, Response, status, HTTPException
+from typing import List
+
+from fastapi import APIRouter, Depends, HTTPException, Response, status
+from loguru import logger
 from sqlalchemy.orm import Session
 
-from typing import List
-import app.schemas.users as schemas
 import app.models.user as models
-from app.api.deps import get_db, get_current_user
+import app.schemas.users as schemas
+from app.api.deps import get_current_user, get_db
 from app.core.security import pwd_context
-from loguru import logger
-
 
 router = APIRouter()
 
@@ -74,9 +74,7 @@ def update_user(
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_user(
-    id: int, current_user=Depends(get_current_user), db: Session = Depends(get_db)
-):
+def delete_user(id: int, current_user=Depends(get_current_user), db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.id == id).first()
     if user is None:
         raise HTTPException(

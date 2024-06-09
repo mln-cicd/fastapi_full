@@ -1,11 +1,15 @@
-from fastapi import APIRouter, Depends, Response, status, HTTPException
-from sqlalchemy.orm import Session
 from typing import List
-from app.schemas.posts import PostCreate, PostRead
+
+from fastapi import APIRouter, Depends, HTTPException, Response, status
+from loguru import logger
+from sqlalchemy import func
+from sqlalchemy.orm import Session
+
+from app.api.deps import get_current_user, get_db
 from app.models.post import Post
 from app.models.user import User
-from app.api.deps import get_db, get_current_user
-from loguru import logger
+from app.models.vote import Vote
+from app.schemas.posts import PostCreate, PostRead, PostWithVote
 
 router = APIRouter()
 
@@ -24,7 +28,7 @@ def create_post(
 
 
 # -----------------READ---------------------------------------
-@router.get("/", response_model=List[PostRead])
+@router.get("/", response_model=List[PostWithVote])
 def get_posts(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -34,28 +38,35 @@ def get_posts(
 ):
     logger.info(f"\n\nFROM get_posts\ncurrent_user.id: {current_user.id}")
     posts = (
-        db.query(Post)
-        .filter(Post.owner_id == current_user.id)
+        db.query(Post, func.count(Vote.post_id).label("votes"))
+        .join(Vote, Vote.post_id == Post.id, isouter=True)
+        .group_by(Post.id)
+        # .filter(Post.owner_id == current_user.id) # Comment this line to get fr private to pblic
         .filter(Post.title.contains(search))
         .limit(limit)
         .offset(skip)
+        .all()
     )
 
     logger.info(f"\n\nFROM get_posts\posts: {posts}")
     return posts
 
 
-@router.get("/{id}", response_model=PostRead)
+@router.get("/{id}", response_model=PostWithVote)
 def get_post(
     id: int,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    post = db.query(Post).filter(Post.owner_id == current_user.id).first()
+    post = (
+        db.query(Post, func.count(Vote.post_id).label("votes"))
+        .join(Vote, Vote.post_id == Post.id, isouter=True)
+        .group_by(Post.id)
+        .filter(Post.id == id)
+        .first()
+    )  # add to get private posts .filter(Post.owner_id == current_user.id)\
     if post is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Post not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
     return post
 
 

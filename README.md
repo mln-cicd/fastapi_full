@@ -17,6 +17,9 @@ WHERE inventory = 0;
 
 UPDATE products SET name = 'flour tortilla'
 WHERE id = 4;
+
+SELECT posts.*, COUNT(votes.post_id) FROM posts
+LEFT JOIN votes on post.id = votes.id WHERE posts.id = 1
 ```
 
 

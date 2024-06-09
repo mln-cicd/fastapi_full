@@ -1,10 +1,10 @@
 from datetime import datetime
+
 from sqlalchemy import DateTime, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql.expression import text
 
 from app.core.declarative import Base
-from sqlalchemy.orm import relationship
 
 
 class Post(Base):

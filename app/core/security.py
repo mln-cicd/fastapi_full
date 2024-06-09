@@ -1,9 +1,10 @@
-from passlib.context import CryptContext
-from jose import jwt, JWTError
 from datetime import datetime, timedelta
-from app.core.config import settings
-import app.schemas.tokens as schemas
 
+from jose import JWTError, jwt
+from passlib.context import CryptContext
+
+import app.schemas.tokens as schemas
+from app.core.config import settings
 
 ALGORITHM = "HS256"
 

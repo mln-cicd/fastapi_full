@@ -1,26 +1,21 @@
-from typing import Any, Dict, Literal, Optional
-from pydantic_settings import BaseSettings  # , AnyUrl
-
 import secrets
+from typing import Any, Dict, Literal, Optional
+
+from pydantic_settings import BaseSettings  # , AnyUrl
 
 
 class Settings(BaseSettings):
-    """
-    Application settings.
-    """
+    """Application settings."""
 
-    postgres_user: Optional[str] = None
-    postgres_password: Optional[str] = None
-    postgres_host: Optional[str] = None
-    postgres_db: Optional[str] = None
-    superset_admin_username: Optional[str] = None
-    superset_admin_password: Optional[str] = None
-    superset_secret_key: Optional[str] = None
+    POSTGRES_USER: Optional[str] = None
+    POSTGRES_PASSWORD: Optional[str] = None
+    POSTGRES_HOST: Optional[str] = None
+    POSTGRES_DB: Optional[str] = None
 
     class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
+        case_sensitive = True  # Set to True to match the exact case of environment variables
 
+    BACKEND_CORS_ORIGINS: bool | None = True
     API_V1_STR: str = "/api/v1"
     SECRET_KEY: str = secrets.token_urlsafe(32)
     # 60 minutes * 24 hours * 8 days = 8 days

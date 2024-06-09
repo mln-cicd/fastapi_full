@@ -1,5 +1,7 @@
-from pydantic import BaseModel
 from datetime import datetime
+
+from pydantic import BaseModel
+
 from app.schemas.users import UserRead
 
 
@@ -28,3 +30,11 @@ class PostRead(BaseModel):
 
     class Config:
         from_attrubutes = True
+
+
+class PostWithVote(BaseModel):
+    Post: PostRead  # or maybe Post: PostRead
+    votes: int
+
+    class Config:
+        from_attributes = True
