@@ -21,6 +21,9 @@ pydantic-settings = "^2.3.1"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 
 
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.2"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
@@ -128,4 +131,4 @@ docstring-code-line-length = "dynamic"
 # 4. Ignore `E402` (import violations) in all `__init__.py` files, and in select subdirectories.
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["E402", "D104"]
-"**/{tests,docs,tools}/*" = ["D103", "E402", "E", "D"] # "RUF501" = lines too long
+"**/{tests,docs,tools,alembic}/*" = ["D103", "E402", "E", "D"] # "RUF501" = lines too long

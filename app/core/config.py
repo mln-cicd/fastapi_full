@@ -1,5 +1,5 @@
 import secrets
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional, Union
 
 from pydantic_settings import BaseSettings  # , AnyUrl
 
@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     class Config:
         case_sensitive = True  # Set to True to match the exact case of environment variables
 
-    BACKEND_CORS_ORIGINS: bool | None = True
+    BACKEND_CORS_ORIGINS: Union[str, List[str]] = "*"
     API_V1_STR: str = "/api/v1"
     SECRET_KEY: str = secrets.token_urlsafe(32)
     # 60 minutes * 24 hours * 8 days = 8 days
