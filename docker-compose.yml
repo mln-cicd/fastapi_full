@@ -62,3 +62,6 @@ networks:
 
 volumes:
   postgres-data:
+
+
+name: fastapi

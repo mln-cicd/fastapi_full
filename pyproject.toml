@@ -19,8 +19,8 @@ loguru = "^0.7.2"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 pydantic-settings = "^2.3.1"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
-python-on-whales = "^0.71.0"
 aiosqlite = "^0.20.0"
+docker = "^7.1.0"
 
 
 [tool.poetry.group.dev.dependencies]

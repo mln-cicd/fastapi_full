@@ -1,18 +1,13 @@
 import os
 import time
-from python_on_whales import docker
-from loguru import logger
-from tests.const import PROJECT_DIR
 
-
-def create_internal_network():
-    if "internal" not in [network.name for network in docker.network.list()]:
-        docker.network.create("internal")
+import docker
 
 
 def is_container_ready(container):
     container.reload()
-    return container.state.running
+    return container.status == "running"
+
 
 def wait_for_stable_status(container, stable_duration=3, interval=1):
     start_time = time.time()
@@ -29,31 +24,37 @@ def wait_for_stable_status(container, stable_duration=3, interval=1):
         time.sleep(interval)
     return False
 
+
 def start_database_container():
-    scripts_dir = os.path.abspath(f"{PROJECT_DIR}/scripts")
+    client = docker.from_env()
+    scripts_dir = os.path.abspath("./scripts")
     container_name = "test-db"
 
     try:
-        existing_container = docker.container.inspect(container_name)
-        logger.info(f"Container '{container_name}' exists. Stopping and removing...")
-        docker.container.stop(container_name)
-        docker.container.remove(container_name)
-        logger.info(f"Container '{container_name}' stopped and removed")
-    except Exception as e:
-        logger.info(f"Container '{container_name}' does not exist or could not be inspected: {e}")
+        existing_container = client.containers.get(container_name)
+        print(f"Container '{container_name} exists. Stopping and removing...")
+        existing_container.stop()
+        existing_container.remove()
+        print((f"Container '{container_name} stopped and removed"))
+    except docker.errors.NotFound:
+        print(f"Container '{container_name}' does not exist.")
 
-    container = docker.run(
-        name=container_name,
-        image="postgres:16.1-alpine3.19",
-        detach=True,
-        publish={"35435:5432"},
-        envs={
+    # Define container configuration
+    container_config = {
+        "name": container_name,
+        "image": "postgres:16.1-alpine3.19",
+        "detach": True,
+        "ports": {"5432": "5434"},
+        "environment": {
             "POSTGRES_USER": "postgres",
             "POSTGRES_PASSWORD": "postgres",
         },
-        volumes=[f"{scripts_dir}:/docker-entrypoint-initdb.d"],
-        networks=["internal"]
-    )
+        "volumes": [f"{scripts_dir}:/docker-entrypoint-initdb.d"],
+        "network_mode": "fastapi_backend",
+    }
+
+    # Start Container
+    container = client.containers.run(**container_config)
 
     while not is_container_ready(container):
         time.sleep(1)
