@@ -1,3 +1,5 @@
+# app/core/config.py
+
 import secrets
 from typing import Any, Dict, List, Literal, Optional, Union
 
@@ -31,6 +33,10 @@ class Settings(BaseSettings):
             return f"postgresql+psycopg2://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}/{self.POSTGRES_DB}"
         elif self.ENVIRONMENT == "test":
             return f"postgresql+psycopg2://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@localhost/{self.POSTGRES_DB}_test"
+        elif self.ENVIRONMENT == "unit_test":
+            return "sqlite:///./test.db"
+        elif self.ENVIRONMENT == "integration_test":
+            return f"postgresql+psycopg2://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@localhost/{self.POSTGRES_DB}_integration_test"
         elif self.ENVIRONMENT == "production":
             return f"postgresql+psycopg2://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@production-db-host/{self.POSTGRES_DB}"
         else:
