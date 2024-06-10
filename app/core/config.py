@@ -1,5 +1,3 @@
-# app/core/config.py
-
 import secrets
 from typing import Any, Dict, List, Literal, Optional, Union
 
@@ -14,6 +12,9 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: Optional[str] = None
     POSTGRES_HOST: Optional[str] = None
     POSTGRES_DB: Optional[str] = None
+
+    SQLALCHEMY_TEST_POSTGRES_URI: Optional[str] = "postgresql+psycopg2://test_user:test_password@localhost/test_db"
+    SQLALCHEMY_TEST_SQLITE_URI: Optional[str] = "sqlite:///./test.db"
 
     class Config:
         case_sensitive = True  # Set to True to match the exact case of environment variables
@@ -31,12 +32,6 @@ class Settings(BaseSettings):
     def SQLALCHEMY_DATABASE_URI(self) -> str:
         if self.ENVIRONMENT == "local":
             return f"postgresql+psycopg2://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}/{self.POSTGRES_DB}"
-        elif self.ENVIRONMENT == "test":
-            return f"postgresql+psycopg2://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@localhost/{self.POSTGRES_DB}_test"
-        elif self.ENVIRONMENT == "unit_test":
-            return "sqlite:///./test.db"
-        elif self.ENVIRONMENT == "integration_test":
-            return f"postgresql+psycopg2://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@localhost/{self.POSTGRES_DB}_integration_test"
         elif self.ENVIRONMENT == "production":
             return f"postgresql+psycopg2://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@production-db-host/{self.POSTGRES_DB}"
         else:
