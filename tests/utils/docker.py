@@ -25,6 +25,13 @@ def start_database_container():
     client = docker.from_env()
     scripts_dir = os.path.abspath("./scripts")
     container_name = "test-db"
+    network_name = "test-network"
+
+    # Create a separate network for testing
+    try:
+        client.networks.get(network_name)
+    except docker.errors.NotFound:
+        client.networks.create(network_name, driver="bridge")
 
     try:
         existing_container = client.containers.get(container_name)
@@ -43,7 +50,7 @@ def start_database_container():
             "POSTGRES_PASSWORD": "postgres",
         },
         "volumes": [f"{scripts_dir}:/docker-entrypoint-initdb.d"],
-        "network_mode": "fastapi_backend",
+        "network": network_name,
     }
 
     container = client.containers.run(**container_config)
@@ -53,5 +60,11 @@ def start_database_container():
 
     if not wait_for_stable_status(container):
         raise RuntimeError("Container did not stabilize within the specified time")
+
+    # Create the 'fastapi' database
+    exec_command = f"psql -U postgres -c 'CREATE DATABASE fastapi;'"
+    exit_code, output = container.exec_run(exec_command)
+    if exit_code != 0:
+        raise RuntimeError(f"Failed to create database: {output.decode()}")
 
     return container
