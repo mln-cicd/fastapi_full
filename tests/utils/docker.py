@@ -1,13 +1,10 @@
 import os
 import time
-
 import docker
-
 
 def is_container_ready(container):
     container.reload()
     return container.status == "running"
-
 
 def wait_for_stable_status(container, stable_duration=3, interval=1):
     start_time = time.time()
@@ -24,7 +21,6 @@ def wait_for_stable_status(container, stable_duration=3, interval=1):
         time.sleep(interval)
     return False
 
-
 def start_database_container():
     client = docker.from_env()
     scripts_dir = os.path.abspath("./scripts")
@@ -32,19 +28,16 @@ def start_database_container():
 
     try:
         existing_container = client.containers.get(container_name)
-        print(f"Container '{container_name} exists. Stopping and removing...")
         existing_container.stop()
         existing_container.remove()
-        print((f"Container '{container_name} stopped and removed"))
     except docker.errors.NotFound:
-        print(f"Container '{container_name}' does not exist.")
+        pass
 
-    # Define container configuration
     container_config = {
         "name": container_name,
         "image": "postgres:16.1-alpine3.19",
         "detach": True,
-        "ports": {"5432": "5434"},
+        "ports": {"5432": "35435"},
         "environment": {
             "POSTGRES_USER": "postgres",
             "POSTGRES_PASSWORD": "postgres",
@@ -53,7 +46,6 @@ def start_database_container():
         "network_mode": "fastapi_backend",
     }
 
-    # Start Container
     container = client.containers.run(**container_config)
 
     while not is_container_ready(container):
