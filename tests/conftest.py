@@ -11,7 +11,7 @@ from app.core.db import create_tables  # Import the create_tables function
 POSTGRES_IMAGE = "postgres:16.1-alpine3.19"
 POSTGRES_USERNAME = "postgres"
 POSTGRES_PASSWORD = "postgres"
-POSTGRES_DATABASE = "localhost:5434/testdb"
+POSTGRES_DATABASE = "fastapi"
 
 @pytest.fixture(scope="session")
 def postgres_container():
@@ -22,7 +22,7 @@ def postgres_container():
         POSTGRES_IMAGE,
         username=POSTGRES_USERNAME,
         password=POSTGRES_PASSWORD,
-        dbname="localhost:5434/testdb",
+        dbname=POSTGRES_DATABASE,
     ) as postgres:
         postgres.start()
         yield postgres
