@@ -6,20 +6,21 @@ from starlette.middleware.cors import CORSMiddleware
 from app.api.main import api_router
 from app.core.config import settings
 
-# create_tables()
-# Base.metadata.create_all(bind=engine)
-
-
 def custom_generate_unique_id(route: APIRoute) -> str:
     if route.tags:
         return f"{route.tags[0]}-{route.name}"
     return route.name
 
+def start_application(database_uri: str=):
+    # if environment == "local":
+    #     database_uri = f"postgresql+psycopg2://{settings.POSTGRES_USER}:{settings.POSTGRES_PASSWORD}@{settings.POSTGRES_HOST}/{settings.POSTGRES_DB}"
+    # elif environment == "production":
+    #     database_uri = f"postgresql+psycopg2://{settings.POSTGRES_USER}:{settings.POSTGRES_PASSWORD}@production-db-host/{settings.POSTGRES_DB}"
+    # elif environment == "sqlite_test":
+    #     database_uri = "sqlite:///./test.db"
+    # else:
+    #     raise ValueError(f"Unknown environment: {environment}")
 
-# if settings.SENTRY_DSN and settings.ENVIRONMENT != "local":
-#     sentry_sdk.init(dsn=str(settings.SENTRY_DSN), enable_tracing=True)
-
-def start_application():
     app = FastAPI(
         title=settings.PROJECT_NAME,
         openapi_url=f"{settings.API_V1_STR}/openapi.json",
@@ -36,7 +37,7 @@ def start_application():
         )
 
     app.include_router(api_router, prefix=settings.API_V1_STR)
-    return app
+    return app, database_uri
 
-
-app = start_application()
+# Default to local environment if not specified
+app, database_uri = start_application(environment="local")

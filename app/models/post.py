@@ -18,9 +18,8 @@ class Post(Base):
     rating: Mapped[int] = mapped_column(nullable=True)
     published: Mapped[bool] = mapped_column(server_default="TRUE", nullable=True)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False, server_default=text("now()")
+        DateTime(), nullable=False, server_default=text("CURRENT_TIMESTAMP")
     )
     owner_id: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
-    owner = relationship("User")

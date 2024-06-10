@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-
+from fastapi.security import OAuth2PasswordBearer
 import app.schemas.tokens as schemas
 from app.core.config import settings
 
@@ -10,6 +10,7 @@ ALGORITHM = "HS256"
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/login")
 
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)

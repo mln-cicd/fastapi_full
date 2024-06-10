@@ -5,9 +5,8 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
 import app.models.user as models
-from app.core.config import settings
 from app.core.db import SessionLocal
-from app.core.security import verify_access_token
+from app.core.security import verify_access_token, oauth2_scheme
 
 
 def get_db() -> Generator:
@@ -23,7 +22,6 @@ def get_db() -> Generator:
 #         yield session
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/login")
 
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):

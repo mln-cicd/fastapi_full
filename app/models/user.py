@@ -8,7 +8,7 @@ from app.core.declarative import Base
 
 
 class User(Base):
-    """ "Some class for the users table"""
+    """Some class for the users table"""
 
     __tablename__ = "users"
 
@@ -17,5 +17,5 @@ class User(Base):
     email: Mapped[str] = mapped_column(nullable=False, unique=True)
     password: Mapped[str] = mapped_column(nullable=False)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False, server_default=text("now()")
+        DateTime(), nullable=False, server_default=text("CURRENT_TIMESTAMP")
     )
